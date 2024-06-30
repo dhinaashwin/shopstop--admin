@@ -150,6 +150,9 @@ function App() {
       console.error('Failed to fetch dresses:', error);
     }
   };
+  const toggleShowItems = () => {
+    setShowAllItems((prev) => !prev); // Toggle showAllItems state
+  };
 
   const resetForm = () => {
     setFormData({
