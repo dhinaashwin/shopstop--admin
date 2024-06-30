@@ -188,18 +188,7 @@ function App() {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
-          <label htmlFor="s">S</label>
-          <input type="number" value={s} onChange={(e) => setS(e.target.value)} />
-          <label htmlFor="m">M</label>
-          <input type="number" value={m} onChange={(e) => setM(e.target.value)} />
-          <label htmlFor="l">L</label>
-          <input type="number" value={l} onChange={(e) => setL(e.target.value)} />
-          <label htmlFor="xl">XL</label>
-          <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} />
-          <label htmlFor="xxl">XXL</label>
-          <input type="number" value={xxl} onChange={(e) => setXxl(e.target.value)} />
-          <label htmlFor="xxxl">XXXL</label>
-          <input type="number" value={xxxl} onChange={(e) => setXxxl(e.target.value)} />
+        
         </div>
         <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
         {previewUrl && (
