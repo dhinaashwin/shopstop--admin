@@ -6,40 +6,26 @@ import './App.css';
 
 function App() {
   const [img, setImg] = useState(null);
-  const [img2, setImg2] = useState(null);
-  const [img3, setImg3] = useState(null);
-  const [img4, setImg4] = useState(null);
   const [imgUrls, setImgUrls] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
-  const [previewUrls, setPreviewUrls] = useState({});
+  const [previewUrl, setPreviewUrl] = useState('');
   const [name, setName] = useState('');
-  const [category, setCategory] = useState('');
-  const [gender, setGender] = useState('');
-  const [oldPrice, setOldPrice] = useState('');
-  const [newPrice, setNewPrice] = useState('');
-  const [discount, setDiscount] = useState(false);
-  const [isNew, setIsNew] = useState(true);
+  const [price, setPrice] = useState('');
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
-
+  
   const fileInputRef = useRef(); // Create a ref for the file input
 
   const handleClick = async () => {
     if (!img) {
-      setUploadStatus('No main image selected');
+      setUploadStatus('No file selected');
       return;
     }
     try {
-      const uploadImage = async (file) => {
-        const imgRef = ref(imageDb, `files/${file.name}-${uuidv4()}`);
-        await uploadBytes(imgRef, file);
-        return getDownloadURL(imgRef);
-      };
-
-      const mainImageUrl = await uploadImage(img);
-      const image2Url = img2 ? await uploadImage(img2) : '';
-      const image3Url = img3 ? await uploadImage(img3) : '';
-      const image4Url = img4 ? await uploadImage(img4) : '';
+      const imgRef = ref(imageDb, `files/${img.name}-${uuidv4()}`); // Use the original file name with a unique ID
+      await uploadBytes(imgRef, img);
+      const url = await getDownloadURL(imgRef);
+      console.log('Uploaded image URL:', url); // Log the image URL to the console
 
       // Send data to MongoDB via your backend server
       await fetch('https://shopstop-admin-server.vercel.app/upload', {
@@ -47,19 +33,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name,
-          category,
-          gender,
-          oldPrice: parseFloat(oldPrice),
-          newPrice: parseFloat(newPrice),
-          discount,
-          mainImage: mainImageUrl,
-          image_2: image2Url,
-          image_3: image3Url,
-          image_4: image4Url,
-          new: isNew
-        }),
+        body: JSON.stringify({ name, price, imageUrl: url }),
       });
 
       setUploadStatus('Upload and data save successful');
@@ -71,10 +45,10 @@ function App() {
     }
   };
 
-  const handleImageChange = (e, setImage) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setImage(file);
-    setPreviewUrls((prev) => ({ ...prev, [e.target.name]: URL.createObjectURL(file) }));
+    setImg(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const fetchImages = async () => {
@@ -117,17 +91,9 @@ function App() {
 
   const resetForm = () => {
     setImg(null);
-    setImg2(null);
-    setImg3(null);
-    setImg4(null);
     setName('');
-    setCategory('');
-    setGender('');
-    setOldPrice('');
-    setNewPrice('');
-    setDiscount(false);
-    setIsNew(true);
-    setPreviewUrls({});
+    setPrice('');
+    setPreviewUrl('');
     fileInputRef.current.value = null; // Clear the file input
   };
 
@@ -139,39 +105,21 @@ function App() {
   return (
     <div className="App">
       {/* left sidebar */}
-      <div>
+      <div> 
         <div>
           <label htmlFor="name">Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-          <label htmlFor="category">Category</label>
-          <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
-          <label htmlFor="gender">Gender</label>
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Unisex">Unisex</option>
-          </select>
-          <label htmlFor="oldPrice">Old Price</label>
-          <input type="number" value={oldPrice} onChange={(e) => setOldPrice(e.target.value)} />
-          <label htmlFor="newPrice">New Price</label>
-          <input type="number" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
-          <label htmlFor="discount">Discount</label>
-          <input type="checkbox" checked={discount} onChange={(e) => setDiscount(e.target.checked)} />
-          <label htmlFor="new">New</label>
-          <input type="checkbox" checked={isNew} onChange={(e) => setIsNew(e.target.checked)} />
+          <label htmlFor="price">Price</label>
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
-        <input type="file" ref={fileInputRef} name="mainImage" onChange={(e) => handleImageChange(e, setImg)} />
-        <input type="file" ref={fileInputRef} name="image_2" onChange={(e) => handleImageChange(e, setImg2)} />
-        <input type="file" ref={fileInputRef} name="image_3" onChange={(e) => handleImageChange(e, setImg3)} />
-        <input type="file" ref={fileInputRef} name="image_4" onChange={(e) => handleImageChange(e, setImg4)} />
+        <input type="file" ref={fileInputRef} onChange={handleImageChange} />
         <button onClick={handleClick}>Upload</button>
         {uploadStatus && <p>{uploadStatus}</p>}
-        {Object.keys(previewUrls).map((key) => (
-          <div key={key}>
-            <img src={previewUrls[key]} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+        {previewUrl && (
+          <div>
+            <img src={previewUrl} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
-        ))}
+        )}
       </div>
       <div>
         {/* right side */}
@@ -184,17 +132,9 @@ function App() {
             <ul>
               {dresses.map((dress) => (
                 <li key={dress._id}>
-                  <img src={dress.mainImage} alt={dress.name} style={{ maxWidth: '200px' }} />
+                  <img src={dress.imageUrl} alt={dress.name} style={{ maxWidth: '200px' }} />
                   <p>Name: {dress.name}</p>
-                  <p>Category: {dress.category}</p>
-                  <p>Gender: {dress.gender}</p>
-                  <p>Old Price: {dress.oldPrice}</p>
-                  <p>New Price: {dress.newPrice}</p>
-                  <p>Discount: {dress.discount ? 'Yes' : 'No'}</p>
-                  <p>New: {dress.new ? 'Yes' : 'No'}</p>
-                  {dress.image_2 && <img src={dress.image_2} alt={`${dress.name} - 2`} style={{ maxWidth: '200px' }} />}
-                  {dress.image_3 && <img src={dress.image_3} alt={`${dress.name} - 3`} style={{ maxWidth: '200px' }} />}
-                  {dress.image_4 && <img src={dress.image_4} alt={`${dress.name} - 4`} style={{ maxWidth: '200px' }} />}
+                  <p>Price: {dress.price}</p>
                   <button onClick={() => handleDelete(dress._id)}>Delete Item</button>
                 </li>
               ))}
