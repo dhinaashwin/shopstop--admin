@@ -1,60 +1,105 @@
-import { useState, useEffect, useRef } from 'react';
-import { imageDb } from '../config'; // Ensure this file exports the configured Firebase storage instance
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { imageDb } from '../config'; // Assuming this file exports the configured Firebase storage instance
 import { getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid'; // Import the v4 function and alias it as uuidv4 for generating unique IDs
+import { v4 as uuidv4 } from 'uuid';
 import './App.css';
 
 function App() {
-  const [img, setImg] = useState(null);
-  const [img2, setImg2] = useState(null);
-  const [img3, setImg3] = useState(null);
-  const [img4, setImg4] = useState(null);
+  const [formData, setFormData] = useState({
+    id: null,
+    name: '',
+    price: '',
+    category: '',
+    newProduct: false,
+    discount: false,
+    gender: '',
+  });
+
+  const [sizes, setSizes] = useState({
+    S: 0,
+    M: 0,
+    L: 0,
+    XL: 0,
+    XXL: 0,
+    XXXL: 0,
+  });
+
+  const [images, setImages] = useState({
+    img: null,
+    img2: null,
+    img3: null,
+    img4: null,
+    previewUrl: '',
+    previewUrl2: '',
+    previewUrl3: '',
+    previewUrl4: '',
+  });
+
   const [imgUrls, setImgUrls] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
-  const [previewUrl, setPreviewUrl] = useState('');
-  const [previewUrl2, setPreviewUrl2] = useState('');
-  const [previewUrl3, setPreviewUrl3] = useState('');
-  const [previewUrl4, setPreviewUrl4] = useState('');
-  const [id,setId] = useState(null);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [newProduct, setNewProduct] = useState(false);
-  const [discount, setDiscount] = useState(false);
-  const [gender, setGender] = useState('');
-  const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
-  const [dresses, setDresses] = useState([]);
-  const [s,setS]=useState(null);
-  const [m,setM]=useState(null);
-  const [l,setL]=useState(null);
-  const [xl,setXl]=useState(null);
-  const [xxl,setXxl]=useState(null);
-  const [xxxl,setXxxl]=useState(null);
-  const fileInputRef = useRef(); // Create a ref for the file input
-  const fileInputRef2 = useRef(); // Create a ref for the second file input
-  const fileInputRef3 = useRef();
-  const fileInputRef4 = useRef();
+
+  const fileInputRefs = {
+    img: useRef(),
+    img2: useRef(),
+    img3: useRef(),
+    img4: useRef(),
+  };
+
+  useEffect(() => {
+    fetchImages();
+    fetchDresses();
+  }, []);
+
+  const handleImageChange = useCallback((e, key) => {
+    const file = e.target.files[0];
+    setImages((prevImages) => ({
+      ...prevImages,
+      [key]: file,
+      [`previewUrl${key}`]: URL.createObjectURL(file),
+    }));
+  }, []);
+
+  const handleInputChange = useCallback((e) => {
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: checked,
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  }, []);
+
+  const uploadImage = async (file) => {
+    const imgRef = ref(imageDb, `files/${file.name}-${uuidv4()}`);
+    await uploadBytes(imgRef, file);
+    return getDownloadURL(imgRef);
+  };
+
   const handleClick = async () => {
+    const { img, img2, img3, img4 } = images;
+    const { id, name, price, category, newProduct, discount, gender } = formData;
+
     if (!img) {
       setUploadStatus('No main image selected');
       return;
     }
+
     if (!name || !price || !category || !gender) {
       alert('Please fill out all required fields.');
       return;
     }
-    try {
-      const uploadImage = async (file) => {
-        const imgRef = ref(imageDb, `files/${file.name}-${uuidv4()}`);
-        await uploadBytes(imgRef, file);
-        return getDownloadURL(imgRef);
-      };
 
+    try {
       const mainImageUrl = await uploadImage(img);
       const image2Url = img2 ? await uploadImage(img2) : '';
       const image3Url = img3 ? await uploadImage(img3) : '';
       const image4Url = img4 ? await uploadImage(img4) : '';
-      // Send data to MongoDB via your backend server
+
       await fetch('https://shopstop-admin-server.vercel.app/upload', {
         method: 'POST',
         headers: {
@@ -67,28 +112,22 @@ function App() {
           imageUrl: mainImageUrl,
           image_2: image2Url,
           image_3: image3Url,
-          image_4:image4Url,
-          category:category,
-          discount:discount,
-          gender:gender,
-          new_product:newProduct,
-          s,m,l,xl,xxl,xxxl
+          image_4: image4Url,
+          category,
+          discount,
+          gender,
+          new_product: newProduct,
+          sizes,
         }),
       });
 
       setUploadStatus('Upload and data save successful');
       fetchImages();
       fetchDresses();
-      resetForm(); // Reset the form after upload
+      resetForm();
     } catch (error) {
       setUploadStatus(`Upload failed: ${error.message}`);
     }
-  };
-
-  const handleImageChange = (e, setImage, setPreview) => {
-    const file = e.target.files[0];
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
   };
 
   const fetchImages = async () => {
@@ -102,10 +141,6 @@ function App() {
     }
   };
 
-  const toggleShowItems = () => {
-    setShowAllItems((prev) => !prev); // Toggle showAllItems state
-  };
-
   const fetchDresses = async () => {
     try {
       const response = await fetch('https://shopstop-admin-server.vercel.app/items');
@@ -116,107 +151,96 @@ function App() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        await fetch(`https://shopstop-admin-server.vercel.app/items/${id}`, {
-          method: 'DELETE',
-        });
-        setDresses(dresses.filter((dress) => dress._id !== id));
-      } catch (error) {
-        console.error('Failed to delete dress:', error);
-      }
-    }
-  };
-
   const resetForm = () => {
-    setImg(null);
-    setImg2(null);
-    setImg3(null);
-    setImg4(null)
-    setId(null)
-    setS(null)
-    setM(null)
-    setL(null)
-    setXl(null)
-    setXxl(null)
-    setXxxl(null)
-    setName('');
-    setPrice('');
-    setDiscount('');
-    setCategory('');
-    setGender('');
-    setNewProduct('');
-    setPreviewUrl('');
-    setPreviewUrl2('');
-    setPreviewUrl3('');
-    setPreviewUrl4('');
-    fileInputRef.current.value = null; // Clear the file input
-    fileInputRef2.current.value = null;// Clear the second file input
-    fileInputRef3.current.value = null;
-  };
+    setFormData({
+      id: null,
+      name: '',
+      price: '',
+      category: '',
+      newProduct: false,
+      discount: false,
+      gender: '',
+    });
 
-  useEffect(() => {
-    fetchImages();
-    fetchDresses();
-  }, []);
+    setSizes({
+      S: 0,
+      M: 0,
+      L: 0,
+      XL: 0,
+      XXL: 0,
+      XXXL: 0,
+    });
+
+    setImages({
+      img: null,
+      img2: null,
+      img3: null,
+      img4: null,
+      previewUrl: '',
+      previewUrl2: '',
+      previewUrl3: '',
+      previewUrl4: '',
+    });
+
+    Object.values(fileInputRefs).forEach((ref) => {
+      ref.current.value = null;
+    });
+  };
 
   return (
     <div className="App">
       {/* left sidebar */}
       <div>
-        <div>
         <label htmlFor="name">Id</label>
-        <input type="number" value={id} onChange={(e) => setId(e.target.value)} />
-          <label htmlFor="name">Name</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-          <label htmlFor="price">Price</label>
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
-          <label htmlFor="category">Category</label>
-          <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
-          <label>
-            New Product:
-            <input type="checkbox" checked={newProduct} onChange={(e) => setNewProduct(e.target.checked)} />
-          </label>
-          <label>
-            Discount:
-            <input type="checkbox" checked={discount} onChange={(e) => setDiscount(e.target.checked)} />
-          </label>
-          <label htmlFor="gender">Gender</label>
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        
-        </div>
-        <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
-        {previewUrl && (
-          <div>
-            <img src={previewUrl} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+        <input type="number" name="id" value={formData.id || ''} onChange={handleInputChange} />
+        <label htmlFor="name">Name</label>
+        <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
+        <label htmlFor="price">Price</label>
+        <input type="number" name="price" value={formData.price} onChange={handleInputChange} />
+        <label htmlFor="category">Category</label>
+        <input type="text" name="category" value={formData.category} onChange={handleInputChange} />
+        <label>
+          New Product:
+          <input type="checkbox" name="newProduct" checked={formData.newProduct} onChange={handleInputChange} />
+        </label>
+        <label>
+          Discount:
+          <input type="checkbox" name="discount" checked={formData.discount} onChange={handleInputChange} />
+        </label>
+        <label htmlFor="gender">Gender</label>
+        <select name="gender" value={formData.gender} onChange={handleInputChange}>
+          <option value="">Select</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+
+        <label htmlFor="sizes">Sizes</label>
+        {Object.keys(sizes).map((size) => (
+          <div key={size}>
+            <label htmlFor={`size${size}`}>{size}</label>
+            <input
+              type="number"
+              name={`size${size}`}
+              value={sizes[size]}
+              onChange={(e) => setSizes((prevSizes) => ({ ...prevSizes, [size]: e.target.value }))}
+            />
           </div>
-        )}
-        <input type="file" ref={fileInputRef2} onChange={(e) => handleImageChange(e, setImg2, setPreviewUrl2)} />
-        {previewUrl2 && (
-          <div>
-            <img src={previewUrl2} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+        ))}
+
+        {Object.keys(images).map((key) => (
+          <div key={key}>
+            <input type="file" ref={fileInputRefs[key]} onChange={(e) => handleImageChange(e, key)} />
+            {images[key] && (
+              <div>
+                <img src={images[`previewUrl${key}`]} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+              </div>
+            )}
           </div>
-        )}
-         <input type="file" ref={fileInputRef3} onChange={(e) => handleImageChange(e, setImg3, setPreviewUrl3)} />
-        {previewUrl && (
-          <div>
-            <img src={previewUrl3} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
-          </div>
-        )}
-        <input type="file" ref={fileInputRef4} onChange={(e) => handleImageChange(e, setImg4, setPreviewUrl4)} />
-        {previewUrl && (
-          <div>
-            <img src={previewUrl4} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
-          </div>
-        )}
+        ))}
         <button onClick={handleClick}>Upload</button>
         {uploadStatus && <p>{uploadStatus}</p>}
       </div>
+      {/* right side */}
       <div>
         {/* right side */}
         <button onClick={toggleShowItems}>
@@ -231,7 +255,6 @@ function App() {
                   <img src={dress.imageUrl} alt={dress.name} style={{ maxWidth: '200px' }} />
                   <p>Name: {dress.name}</p>
                   <p>Price: {dress.price}</p>
-                  {dress.image_2 && <img src={dress.image_2} alt={`${dress.name} - 2`} style={{ maxWidth: '200px' }} />}
                   <button onClick={() => handleDelete(dress._id)}>Delete Item</button>
                 </li>
               ))}

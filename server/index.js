@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
 
 // POST endpoint to save item to MongoDB
 app.post('/upload', async (req, res) => {
-  const { id, name, price, imageUrl, image_2, image_3, image_4, category, new_product, discount, gender } = req.body;
+  const { id, name, price, imageUrl, image_2, image_3, image_4, category, new_product, discount, gender,sizes } = req.body;
   if (!id || !name || !price || !imageUrl || !category || new_product == null || discount == null || !gender) {
     return res.status(400).send('All required fields must be provided');
   }
@@ -62,6 +62,7 @@ app.post('/upload', async (req, res) => {
       discount,
       gender,
       date: new Date(),
+      sizes
       
     });
     await newItem.save();
