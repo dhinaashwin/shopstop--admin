@@ -14,7 +14,7 @@ function App() {
     discount: false,
     gender: '',
   });
-
+  const [showAllItems, setShowAllItems] = useState(false); 
   const [sizes, setSizes] = useState({
     S: 0,
     M: 0,
