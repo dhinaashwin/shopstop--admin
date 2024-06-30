@@ -39,7 +39,9 @@ const itemSchema = new mongoose.Schema({
   price: Number,
   imageUrl: String
 });
-
+app.get("/",(req,res) => {
+  res.send("Connected")
+})
 const Item = mongoose.model('allproducts', itemSchema);
 
 // POST endpoint to save item to MongoDB
