@@ -28,7 +28,7 @@ function App() {
       console.log('Uploaded image URL:', url); // Log the image URL to the console
 
       // Send data to MongoDB via your backend server
-      await fetch('http://localhost:5000/upload', {
+      await fetch('https://shopstop-admin-server.vercel.app/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ function App() {
 
   const fetchDresses = async () => {
     try {
-      const response = await fetch('http://localhost:5000/items');
+      const response = await fetch('https://shopstop-admin-server.vercel.app/items');
       const data = await response.json();
       setDresses(data);
     } catch (error) {
@@ -79,7 +79,7 @@ function App() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        await fetch(`http://localhost:5000/items/${id}`, {
+        await fetch(`https://shopstop-admin-server.vercel.app/items/${id}`, {
           method: 'DELETE',
         });
         setDresses(dresses.filter((dress) => dress._id !== id));
