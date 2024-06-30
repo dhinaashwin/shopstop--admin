@@ -151,6 +151,22 @@ function App() {
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
           <label htmlFor="price">Price</label>
           <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+          <label htmlFor="category">Category</label>
+          <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
+          <label>
+            New Product:
+            <input type="checkbox" checked={newProduct} onChange={(e) => setNewProduct(e.target.checked)} />
+          </label>
+          <label>
+            Discount:
+            <input type="checkbox" checked={discount} onChange={(e) => setDiscount(e.target.checked)} />
+          </label>
+          <label htmlFor="gender">Gender</label>
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
         </div>
         <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
         {previewUrl && (
