@@ -47,7 +47,7 @@ const Item = mongoose.model('allproducts', itemSchema);
 
 // POST endpoint to save item to MongoDB
 app.post('/upload', async (req, res) => {
-  const { name, price, imageUrl } = req.body;
+  const { name, price, imageUrl,image_2} = req.body;
   try {
     const newItem = new Item({ name, price, imageUrl });
     await newItem.save();
