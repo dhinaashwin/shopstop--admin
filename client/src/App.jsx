@@ -25,12 +25,12 @@ function App() {
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
   const [sizes, setSizes] = useState({
-    S: null,
-    M: null,
-    L: null,
-    XL: null,
-    XXL: null,
-    XXXL: null,
+    S: 0,
+    M: 0,
+    L: 0,
+    XL: 0,
+    XXL: 0,
+    XXXL:0,
   });
   const fileInputRef = useRef(); // Create a ref for the file input
   const fileInputRef2 = useRef(); // Create a ref for the second file input
@@ -142,12 +142,12 @@ function App() {
     setImg4(null);
     setId(null);
     setSizes({
-      S: null,
-      M: null,
-      L: null,
-      XL: null,
-      XXL: null,
-      XXXL: null,
+      S: 0,
+      M: 0,
+      L: 0,
+      XL: 0,
+      XXL: 0,
+      XXXL:0,
     });
     setName("");
     setPrice("");
