@@ -239,6 +239,7 @@ function App() {
                 </button>
                 <input
                   type="number"
+                  style = {{'width':'20px'}}
                   id={`size-${size}`}
                   value={sizes[size] || ""}
                   onChange={(e) =>
