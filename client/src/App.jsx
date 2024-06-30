@@ -241,7 +241,7 @@ function App() {
       <input
         type="number"
         id={`size-${size}`}
-        value={sizes[size]?.value || ''}
+        value={sizes[size]?.value || 0}
         onChange={(e) =>
           setSizes((prevSizes) => ({
             ...prevSizes,
