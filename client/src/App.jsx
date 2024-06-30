@@ -128,6 +128,39 @@ function App() {
       }
     }
   };
+  const [sizes, setSizes] = useState({
+    S: 0,
+    M: 0,
+    L: 0,
+    XL: 0,
+    XXL: 0,
+    XXXL: 0,
+  });
+  
+  const handleSizeChange = (size, value) => {
+    setSizes((prevSizes) => ({
+      ...prevSizes,
+      [size]: value,
+    }));
+  };
+  
+  const incrementSize = (size) => {
+    setSizes((prevSizes) => ({
+      ...prevSizes,
+      [size]: prevSizes[size] + 1,
+    }));
+  };
+  
+  const decrementSize = (size) => {
+    if (sizes[size] > 0) {
+      setSizes((prevSizes) => ({
+        ...prevSizes,
+        [size]: prevSizes[size] - 1,
+      }));
+    }
+  };
+  
+  const getSizeValue = (size) => sizes[size] || 0;
 
   const resetForm = () => {
     setImg(null);
