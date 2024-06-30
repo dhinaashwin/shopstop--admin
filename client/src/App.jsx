@@ -164,13 +164,13 @@ function App() {
             <img src={previewUrl2} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
         )}
-         <input type="file" ref={fileInputRef3} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl3)} />
+         <input type="file" ref={fileInputRef3} onChange={(e) => handleImageChange(e, setImg3, setPreviewUrl3)} />
         {previewUrl && (
           <div>
             <img src={previewUrl3} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
         )}
-        <input type="file" ref={fileInputRef4} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl4)} />
+        <input type="file" ref={fileInputRef4} onChange={(e) => handleImageChange(e, setImg4, setPreviewUrl4)} />
         {previewUrl && (
           <div>
             <img src={previewUrl4} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
