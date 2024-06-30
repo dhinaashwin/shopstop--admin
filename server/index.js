@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 const port = 5000;
-
+require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
@@ -23,7 +23,7 @@ const allowCors = fn => async (req, res) => {
   return await fn(req, res)
 }
 
-const mongoURI = 'mongodb+srv://dhinaashwin11:Mongodbpassword@shopstopcluster.d9uxour.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=ShopStopCluster';
+const mongoURI = process.env.MONGO_URL;
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
