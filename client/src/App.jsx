@@ -6,26 +6,33 @@ import './App.css';
 
 function App() {
   const [img, setImg] = useState(null);
+  const [img2, setImg2] = useState(null);
   const [imgUrls, setImgUrls] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl2, setPreviewUrl2] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
-  
+
   const fileInputRef = useRef(); // Create a ref for the file input
+  const fileInputRef2 = useRef(); // Create a ref for the second file input
 
   const handleClick = async () => {
     if (!img) {
-      setUploadStatus('No file selected');
+      setUploadStatus('No main image selected');
       return;
     }
     try {
-      const imgRef = ref(imageDb, `files/${img.name}-${uuidv4()}`); // Use the original file name with a unique ID
-      await uploadBytes(imgRef, img);
-      const url = await getDownloadURL(imgRef);
-      console.log('Uploaded image URL:', url); // Log the image URL to the console
+      const uploadImage = async (file) => {
+        const imgRef = ref(imageDb, `files/${file.name}-${uuidv4()}`);
+        await uploadBytes(imgRef, file);
+        return getDownloadURL(imgRef);
+      };
+
+      const mainImageUrl = await uploadImage(img);
+      const image2Url = img2 ? await uploadImage(img2) : '';
 
       // Send data to MongoDB via your backend server
       await fetch('https://shopstop-admin-server.vercel.app/upload', {
@@ -33,7 +40,12 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, price, imageUrl: url }),
+        body: JSON.stringify({
+          name,
+          price: parseFloat(price),
+          imageUrl: mainImageUrl,
+          image_2: image2Url,
+        }),
       });
 
       setUploadStatus('Upload and data save successful');
@@ -45,10 +57,10 @@ function App() {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = (e, setImage, setPreview) => {
     const file = e.target.files[0];
-    setImg(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const fetchImages = async () => {
@@ -91,10 +103,13 @@ function App() {
 
   const resetForm = () => {
     setImg(null);
+    setImg2(null);
     setName('');
     setPrice('');
     setPreviewUrl('');
+    setPreviewUrl2('');
     fileInputRef.current.value = null; // Clear the file input
+    fileInputRef2.current.value = null; // Clear the second file input
   };
 
   useEffect(() => {
@@ -105,21 +120,27 @@ function App() {
   return (
     <div className="App">
       {/* left sidebar */}
-      <div> 
+      <div>
         <div>
           <label htmlFor="name">Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
           <label htmlFor="price">Price</label>
           <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
-        <input type="file" ref={fileInputRef} onChange={handleImageChange} />
-        <button onClick={handleClick}>Upload</button>
-        {uploadStatus && <p>{uploadStatus}</p>}
+        <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
         {previewUrl && (
           <div>
             <img src={previewUrl} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
         )}
+        <input type="file" ref={fileInputRef2} onChange={(e) => handleImageChange(e, setImg2, setPreviewUrl2)} />
+        {previewUrl2 && (
+          <div>
+            <img src={previewUrl2} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+          </div>
+        )}
+        <button onClick={handleClick}>Upload</button>
+        {uploadStatus && <p>{uploadStatus}</p>}
       </div>
       <div>
         {/* right side */}
@@ -135,6 +156,7 @@ function App() {
                   <img src={dress.imageUrl} alt={dress.name} style={{ maxWidth: '200px' }} />
                   <p>Name: {dress.name}</p>
                   <p>Price: {dress.price}</p>
+                  {dress.image_2 && <img src={dress.image_2} alt={`${dress.name} - 2`} style={{ maxWidth: '200px' }} />}
                   <button onClick={() => handleDelete(dress._id)}>Delete Item</button>
                 </li>
               ))}

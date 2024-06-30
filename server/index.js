@@ -37,7 +37,8 @@ mongoose.connect(mongoURI, {
 const itemSchema = new mongoose.Schema({
   name: String,
   price: Number,
-  imageUrl: String
+  imageUrl: String,
+  image_2:String
 });
 app.get("/",(req,res) => {
   res.send("Connected")
