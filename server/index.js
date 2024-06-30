@@ -8,21 +8,6 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
-const allowCors = fn => async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-  return await fn(req, res)
-}
-
 const mongoURI = process.env.MONGO_URL;
 
 mongoose.connect(mongoURI, {
@@ -38,18 +23,37 @@ const itemSchema = new mongoose.Schema({
   name: String,
   price: Number,
   imageUrl: String,
-  image_2:String
+  image_2: String,
+  image_3: String,
+  image_4: String,
+  category: String,
+  new_product: Boolean,
+  discount: Boolean,
+  gender: String
 });
-app.get("/",(req,res) => {
-  res.send("Connected")
-})
+
 const Item = mongoose.model('allproducts', itemSchema);
+
+app.get("/", (req, res) => {
+  res.send("Connected")
+});
 
 // POST endpoint to save item to MongoDB
 app.post('/upload', async (req, res) => {
-  const { name, price, imageUrl,image_2} = req.body;
+  const { name, price, imageUrl, image_2, image_3, image_4, category, new_product, discount, gender } = req.body;
   try {
-    const newItem = new Item({ name, price, imageUrl ,image_2});
+    const newItem = new Item({
+      name,
+      price,
+      imageUrl,
+      image_2,
+      image_3,
+      image_4,
+      category,
+      new_product,
+      discount,
+      gender
+    });
     await newItem.save();
     res.status(201).send('Item saved to MongoDB');
   } catch (error) {
