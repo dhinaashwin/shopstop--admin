@@ -173,6 +173,7 @@ function App() {
     <div className="App">
       {/* left sidebar */}
       <div>
+        <h1>Add Products</h1>
         <div>
           <label htmlFor="name">Id</label>
           <input
