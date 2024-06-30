@@ -221,51 +221,55 @@ function App() {
             <option value="female">Female</option>
           </select>
           <label htmlFor="sizes">Sizes:</label>
-          {Object.keys(sizes).map((size) => (
-            <div key={size}>
-              <label htmlFor={`size-${size}`}>{size}</label>
-              <div>
-                <button
-                  onClick={() =>
-                    setSizes((prevSizes) => ({
-                      ...prevSizes,
-                      [size]: prevSizes[size]
-                        ? parseInt(prevSizes[size]) + 1
-                        : 1,
-                    }))
-                  }
-                >
-                  +
-                </button>
-                <input
-                  type="number"
-                  style = {{'width':'20px'}}
-                  id={`size-${size}`}
-                  value={sizes[size] || ""}
-                  onChange={(e) =>
-                    setSizes((prevSizes) => ({
-                      ...prevSizes,
-                      [size]:
-                        e.target.value === "" ? "" : parseInt(e.target.value),
-                    }))
-                  }
-                />
-                <button
-                  onClick={() =>
-                    setSizes((prevSizes) => ({
-                      ...prevSizes,
-                      [size]:
-                        prevSizes[size] && prevSizes[size] > 0
-                          ? parseInt(prevSizes[size]) - 1
-                          : 0,
-                    }))
-                  }
-                >
-                  -
-                </button>
-              </div>
-            </div>
-          ))}
+{Object.keys(sizes).map((size) => (
+  <div key={size} style={{ marginBottom: '10px' }}>
+    <label htmlFor={`size-${size}`}>{size}</label>
+    <div>
+      <button
+        onClick={() =>
+          setSizes((prevSizes) => ({
+            ...prevSizes,
+            [size]: {
+              ...prevSizes[size],
+              value: (prevSizes[size]?.value || 0) + 1,
+            },
+          }))
+        }
+      >
+        +
+      </button>
+      <input
+        type="number"
+        id={`size-${size}`}
+        value={sizes[size]?.value || ''}
+        onChange={(e) =>
+          setSizes((prevSizes) => ({
+            ...prevSizes,
+            [size]: {
+              ...prevSizes[size],
+              value: e.target.value === '' ? '' : parseInt(e.target.value),
+            },
+          }))
+        }
+        style={{ width: '50px', textAlign: 'center', margin: '0 10px' }}
+      />
+      <button
+        onClick={() =>
+          setSizes((prevSizes) => ({
+            ...prevSizes,
+            [size]: {
+              ...prevSizes[size],
+              value: Math.max((prevSizes[size]?.value || 0) - 1, 0),
+            },
+          }))
+        }
+      >
+        -
+      </button>
+    </div>
+  </div>
+))}
+
         </div>
         <input
           type="file"
