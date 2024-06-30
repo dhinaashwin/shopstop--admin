@@ -43,7 +43,7 @@ function App() {
       const mainImageUrl = await uploadImage(img);
       const image2Url = img2 ? await uploadImage(img2) : '';
       const image3Url = img3 ? await uploadImage(img3) : '';
-      const image4Url = img4 ? await uploadImage(img4) : '';
+      const image4Url = img3 ? await uploadImage(img4) : '';
       // Send data to MongoDB via your backend server
       await fetch('https://shopstop-admin-server.vercel.app/upload', {
         method: 'POST',
@@ -56,7 +56,7 @@ function App() {
           imageUrl: mainImageUrl,
           image_2: image2Url,
           image_3: image3Url,
-          image_4: imag4Url,
+          image_4:image4Url,
           category:category,
           discount:discount,
           gender:gender,
@@ -168,6 +168,12 @@ function App() {
         {previewUrl && (
           <div>
             <img src={previewUrl3} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+          </div>
+        )}
+        <input type="file" ref={fileInputRef4} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl4)} />
+        {previewUrl && (
+          <div>
+            <img src={previewUrl4} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
         )}
         <button onClick={handleClick}>Upload</button>
