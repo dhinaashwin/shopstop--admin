@@ -2,19 +2,28 @@
 
 .App {
   display: flex;
-  justify-content: space-between; /* Adjust as needed */
-  align-items: flex-start; /* Adjust as needed */
-  margin: 20px; /* Adjust spacing */
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px;
 }
 
 .App > div {
-  flex: 1; /* Make both divs take up equal space */
-  padding: 20px; /* Adjust padding as needed */
-  border: 1px solid #ccc; /* Border for each section */
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #fff; /* White background for sections */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+}
+
+.App > div:hover {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
 }
 
 .left-sidebar {
   /* Styles for the left sidebar */
+  margin-right: 20px; /* Add margin to separate from right side */
 }
 
 .right-side {
@@ -24,28 +33,37 @@
 /* Styles for form elements */
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  color: #333; /* Dark text color */
 }
 
 input[type="text"],
 input[type="number"],
 input[type="file"] {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd; /* Lighter border */
   border-radius: 4px;
   box-sizing: border-box;
+  transition: border-color 0.3s ease; /* Smooth border color transition */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="file"]:focus {
+  outline: none;
+  border-color: #007bff; /* Blue border on focus */
 }
 
 button {
-  background-color: #007bff; /* Blue button */
+  background-color: #007bff;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
+  transition: background-color 0.3s ease; /* Smooth background color transition */
 }
 
 button:hover {
@@ -60,11 +78,13 @@ ul {
 li {
   margin-bottom: 20px;
   border: 1px solid #eee;
-  padding: 10px;
+  padding: 12px;
+  border-radius: 4px;
 }
 
 li img {
   max-width: 100%;
   height: auto;
   margin-bottom: 10px;
+  border-radius: 4px;
 }
