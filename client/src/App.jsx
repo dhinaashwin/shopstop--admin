@@ -155,7 +155,7 @@ function App() {
       <div>
         <div>
         <label htmlFor="name">Id</label>
-        <input type="text" value={name} onChange={(e) => setId(e.target.value)} />
+        <input type="number" value={id} onChange={(e) => setId(e.target.value)} />
           <label htmlFor="name">Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
           <label htmlFor="price">Price</label>
