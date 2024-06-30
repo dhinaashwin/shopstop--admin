@@ -13,6 +13,8 @@ function App() {
   const [uploadStatus, setUploadStatus] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
   const [previewUrl2, setPreviewUrl2] = useState('');
+  const [previewUrl3, setPreviewUrl3] = useState('');
+  const [previewUrl4, setPreviewUrl4] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
@@ -118,12 +120,21 @@ function App() {
   const resetForm = () => {
     setImg(null);
     setImg2(null);
+    setImg3(null);
+    setImg4(null)
     setName('');
     setPrice('');
+    setDiscount('');
+    setCategory('');
+    setGender('');
+    setNewProduct('');
     setPreviewUrl('');
     setPreviewUrl2('');
+    setPreviewUrl3('');
+    setPreviewUrl4('');
     fileInputRef.current.value = null; // Clear the file input
     fileInputRef2.current.value = null;// Clear the second file input
+    fileInputRef3.current.value = null;
   };
 
   useEffect(() => {
@@ -151,6 +162,12 @@ function App() {
         {previewUrl2 && (
           <div>
             <img src={previewUrl2} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+          </div>
+        )}
+         <input type="file" ref={fileInputRef3} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
+        {previewUrl && (
+          <div>
+            <img src={previewUrl3} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
         )}
         <button onClick={handleClick}>Upload</button>
