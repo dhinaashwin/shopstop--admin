@@ -24,12 +24,12 @@ function App() {
   const [gender, setGender] = useState('');
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
-  const [S,setS]=useState(null);
-  const [M,setM]=useState(null);
-  const [L,setL]=useState(null);
-  const [XL,setXL]=useState(null);
-  const [XXl,setXXL]=useState(null);
-  const [XXXl,setXXXl]=useState(null);
+  const [s,setS]=useState(null);
+  const [m,setM]=useState(null);
+  const [l,setL]=useState(null);
+  const [xl,setXl]=useState(null);
+  const [xxl,setXxl]=useState(null);
+  const [xxxl,setXxxl]=useState(null);
   const fileInputRef = useRef(); // Create a ref for the file input
   const fileInputRef2 = useRef(); // Create a ref for the second file input
   const fileInputRef3 = useRef();
@@ -72,7 +72,7 @@ function App() {
           discount:discount,
           gender:gender,
           new_product:newProduct,
-         S,M,L,XL,XXL,XXXL
+          s,m,l,xl,xxl,xxxl
         }),
       });
 
@@ -128,39 +128,6 @@ function App() {
       }
     }
   };
-  const [sizes, setSizes] = useState({
-    S: 0,
-    M: 0,
-    L: 0,
-    XL: 0,
-    XXL: 0,
-    XXXL: 0,
-  });
-  
-  const handleSizeChange = (size, value) => {
-    setSizes((prevSizes) => ({
-      ...prevSizes,
-      [size]: value,
-    }));
-  };
-  
-  const incrementSize = (size) => {
-    setSizes((prevSizes) => ({
-      ...prevSizes,
-      [size]: prevSizes[size] + 1,
-    }));
-  };
-  
-  const decrementSize = (size) => {
-    if (sizes[size] > 0) {
-      setSizes((prevSizes) => ({
-        ...prevSizes,
-        [size]: prevSizes[size] - 1,
-      }));
-    }
-  };
-  
-  const getSizeValue = (size) => sizes[size] || 0;
 
   const resetForm = () => {
     setImg(null);
@@ -221,24 +188,18 @@ function App() {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
-          <div>
-  {/* Size Inputs */}
-  {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map((size) => (
-    <div key={size}>
-      <label htmlFor={size}>{size}</label>
-      <div>
-        <button onClick={() => incrementSize(size)}>+</button>
-        <input
-          type="number"
-          id={size.toLowerCase()}
-          value={getSizeValue(size)}
-          onChange={(e) => handleSizeChange(size, e.target.value)}
-        />
-        <button onClick={() => decrementSize(size)}>-</button>
-      </div>
-    </div>
-  ))}
-</div>
+          <label htmlFor="s">S</label>
+          <input type="number" value={s} onChange={(e) => setS(e.target.value)} />
+          <label htmlFor="m">M</label>
+          <input type="number" value={m} onChange={(e) => setM(e.target.value)} />
+          <label htmlFor="l">L</label>
+          <input type="number" value={l} onChange={(e) => setL(e.target.value)} />
+          <label htmlFor="xl">XL</label>
+          <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} />
+          <label htmlFor="xxl">XXL</label>
+          <input type="number" value={xxl} onChange={(e) => setXxl(e.target.value)} />
+          <label htmlFor="xxxl">XXXL</label>
+          <input type="number" value={xxxl} onChange={(e) => setXxxl(e.target.value)} />
         </div>
         <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
         {previewUrl && (
