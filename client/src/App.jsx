@@ -6,9 +6,12 @@ import './App.css';
 
 function App() {
   const [img, setImg] = useState(null);
+  const [img2, setImg2] = useState(null);
+  const [img3, setImg3] = useState(null);
+  const [img4, setImg4] = useState(null);
   const [imgUrls, setImgUrls] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrls, setPreviewUrls] = useState({});
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [gender, setGender] = useState('');
@@ -23,14 +26,20 @@ function App() {
 
   const handleClick = async () => {
     if (!img) {
-      setUploadStatus('No file selected');
+      setUploadStatus('No main image selected');
       return;
     }
     try {
-      const imgRef = ref(imageDb, `files/${img.name}-${uuidv4()}`); // Use the original file name with a unique ID
-      await uploadBytes(imgRef, img);
-      const url = await getDownloadURL(imgRef);
-      console.log('Uploaded image URL:', url); // Log the image URL to the console
+      const uploadImage = async (file) => {
+        const imgRef = ref(imageDb, `files/${file.name}-${uuidv4()}`);
+        await uploadBytes(imgRef, file);
+        return getDownloadURL(imgRef);
+      };
+
+      const mainImageUrl = await uploadImage(img);
+      const image2Url = img2 ? await uploadImage(img2) : '';
+      const image3Url = img3 ? await uploadImage(img3) : '';
+      const image4Url = img4 ? await uploadImage(img4) : '';
 
       // Send data to MongoDB via your backend server
       await fetch('https://shopstop-admin-server.vercel.app/upload', {
@@ -45,7 +54,10 @@ function App() {
           oldPrice: parseFloat(oldPrice),
           newPrice: parseFloat(newPrice),
           discount,
-          imageUrl: url,
+          mainImage: mainImageUrl,
+          image_2: image2Url,
+          image_3: image3Url,
+          image_4: image4Url,
           new: isNew
         }),
       });
@@ -59,10 +71,10 @@ function App() {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = (e, setImage) => {
     const file = e.target.files[0];
-    setImg(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setImage(file);
+    setPreviewUrls((prev) => ({ ...prev, [e.target.name]: URL.createObjectURL(file) }));
   };
 
   const fetchImages = async () => {
@@ -105,6 +117,9 @@ function App() {
 
   const resetForm = () => {
     setImg(null);
+    setImg2(null);
+    setImg3(null);
+    setImg4(null);
     setName('');
     setCategory('');
     setGender('');
@@ -112,7 +127,7 @@ function App() {
     setNewPrice('');
     setDiscount(false);
     setIsNew(true);
-    setPreviewUrl('');
+    setPreviewUrls({});
     fileInputRef.current.value = null; // Clear the file input
   };
 
@@ -124,7 +139,7 @@ function App() {
   return (
     <div className="App">
       {/* left sidebar */}
-      <div> 
+      <div>
         <div>
           <label htmlFor="name">Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
@@ -146,14 +161,17 @@ function App() {
           <label htmlFor="new">New</label>
           <input type="checkbox" checked={isNew} onChange={(e) => setIsNew(e.target.checked)} />
         </div>
-        <input type="file" ref={fileInputRef} onChange={handleImageChange} />
+        <input type="file" ref={fileInputRef} name="mainImage" onChange={(e) => handleImageChange(e, setImg)} />
+        <input type="file" ref={fileInputRef} name="image_2" onChange={(e) => handleImageChange(e, setImg2)} />
+        <input type="file" ref={fileInputRef} name="image_3" onChange={(e) => handleImageChange(e, setImg3)} />
+        <input type="file" ref={fileInputRef} name="image_4" onChange={(e) => handleImageChange(e, setImg4)} />
         <button onClick={handleClick}>Upload</button>
         {uploadStatus && <p>{uploadStatus}</p>}
-        {previewUrl && (
-          <div>
-            <img src={previewUrl} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
+        {Object.keys(previewUrls).map((key) => (
+          <div key={key}>
+            <img src={previewUrls[key]} alt="Selected" style={{ maxWidth: '200px', marginTop: '10px' }} />
           </div>
-        )}
+        ))}
       </div>
       <div>
         {/* right side */}
@@ -166,7 +184,7 @@ function App() {
             <ul>
               {dresses.map((dress) => (
                 <li key={dress._id}>
-                  <img src={dress.imageUrl} alt={dress.name} style={{ maxWidth: '200px' }} />
+                  <img src={dress.mainImage} alt={dress.name} style={{ maxWidth: '200px' }} />
                   <p>Name: {dress.name}</p>
                   <p>Category: {dress.category}</p>
                   <p>Gender: {dress.gender}</p>
@@ -174,6 +192,9 @@ function App() {
                   <p>New Price: {dress.newPrice}</p>
                   <p>Discount: {dress.discount ? 'Yes' : 'No'}</p>
                   <p>New: {dress.new ? 'Yes' : 'No'}</p>
+                  {dress.image_2 && <img src={dress.image_2} alt={`${dress.name} - 2`} style={{ maxWidth: '200px' }} />}
+                  {dress.image_3 && <img src={dress.image_3} alt={`${dress.name} - 3`} style={{ maxWidth: '200px' }} />}
+                  {dress.image_4 && <img src={dress.image_4} alt={`${dress.name} - 4`} style={{ maxWidth: '200px' }} />}
                   <button onClick={() => handleDelete(dress._id)}>Delete Item</button>
                 </li>
               ))}
