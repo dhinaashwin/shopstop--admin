@@ -24,12 +24,12 @@ function App() {
   const [gender, setGender] = useState('');
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
-  const [s,setS]=useState(null);
-  const [m,setM]=useState(null);
-  const [l,setL]=useState(null);
-  const [xl,setXl]=useState(null);
-  const [xxl,setXxl]=useState(null);
-  const [xxxl,setXxxl]=useState(null);
+  const [S,setS]=useState(null);
+  const [M,setM]=useState(null);
+  const [L,setL]=useState(null);
+  const [XL,setXL]=useState(null);
+  const [XXl,setXXL]=useState(null);
+  const [XXXl,setXXXl]=useState(null);
   const fileInputRef = useRef(); // Create a ref for the file input
   const fileInputRef2 = useRef(); // Create a ref for the second file input
   const fileInputRef3 = useRef();
@@ -53,7 +53,7 @@ function App() {
       const mainImageUrl = await uploadImage(img);
       const image2Url = img2 ? await uploadImage(img2) : '';
       const image3Url = img3 ? await uploadImage(img3) : '';
-      const image4Url = img3 ? await uploadImage(img4) : '';
+      const image4Url = img4 ? await uploadImage(img4) : '';
       // Send data to MongoDB via your backend server
       await fetch('https://shopstop-admin-server.vercel.app/upload', {
         method: 'POST',
@@ -72,7 +72,7 @@ function App() {
           discount:discount,
           gender:gender,
           new_product:newProduct,
-          s,m,l,xl,xxl,xxxl
+         S,M,L,XL,XXL,XXXL
         }),
       });
 
@@ -188,18 +188,24 @@ function App() {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
-          <label htmlFor="s">S</label>
-          <input type="number" value={s} onChange={(e) => setS(e.target.value)} />
-          <label htmlFor="m">M</label>
-          <input type="number" value={m} onChange={(e) => setM(e.target.value)} />
-          <label htmlFor="l">L</label>
-          <input type="number" value={l} onChange={(e) => setL(e.target.value)} />
-          <label htmlFor="xl">XL</label>
-          <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} />
-          <label htmlFor="xxl">XXL</label>
-          <input type="number" value={xxl} onChange={(e) => setXxl(e.target.value)} />
-          <label htmlFor="xxxl">XXXL</label>
-          <input type="number" value={xxxl} onChange={(e) => setXxxl(e.target.value)} />
+          <div>
+  {/* Size Inputs */}
+  {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map((size) => (
+    <div key={size}>
+      <label htmlFor={size}>{size}</label>
+      <div>
+        <button onClick={() => incrementSize(size)}>+</button>
+        <input
+          type="number"
+          id={size.toLowerCase()}
+          value={getSizeValue(size)}
+          onChange={(e) => handleSizeChange(size, e.target.value)}
+        />
+        <button onClick={() => decrementSize(size)}>-</button>
+      </div>
+    </div>
+  ))}
+</div>
         </div>
         <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
         {previewUrl && (
