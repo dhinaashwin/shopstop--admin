@@ -49,7 +49,7 @@ const Item = mongoose.model('allproducts', itemSchema);
 app.post('/upload', async (req, res) => {
   const { name, price, imageUrl,image_2} = req.body;
   try {
-    const newItem = new Item({ name, price, imageUrl });
+    const newItem = new Item({ name, price, imageUrl ,image_2});
     await newItem.save();
     res.status(201).send('Item saved to MongoDB');
   } catch (error) {
