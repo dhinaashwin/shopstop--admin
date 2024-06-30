@@ -24,7 +24,12 @@ function App() {
   const [gender, setGender] = useState('');
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
-
+  const [s,setS]=useState(null);
+  const [m,setM]=useState(null);
+  const [l,setL]=useState(null);
+  const [xl,setXl]=useState(null);
+  const [xxl,setXxl]=useState(null);
+  const [xxxl,setXxxl]=useState(null);
   const fileInputRef = useRef(); // Create a ref for the file input
   const fileInputRef2 = useRef(); // Create a ref for the second file input
   const fileInputRef3 = useRef();
@@ -66,7 +71,8 @@ function App() {
           category:category,
           discount:discount,
           gender:gender,
-          new_product:newProduct
+          new_product:newProduct,
+          s,m,l,xl,xxl,xxxl
         }),
       });
 
@@ -129,6 +135,12 @@ function App() {
     setImg3(null);
     setImg4(null)
     setId(null)
+    setS(null)
+    setM(null)
+    setL(null)
+    setXl(null)
+    setXxl(null)
+    setXxxl(null)
     setName('');
     setPrice('');
     setDiscount('');
@@ -176,6 +188,18 @@ function App() {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
+          <label htmlFor="s">S</label>
+          <input type="number" value={s} onChange={(e) => setS(e.target.value)} />
+          <label htmlFor="m">M</label>
+          <input type="number" value={m} onChange={(e) => setM(e.target.value)} />
+          <label htmlFor="l">L</label>
+          <input type="number" value={l} onChange={(e) => setL(e.target.value)} />
+          <label htmlFor="xl">XL</label>
+          <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} />
+          <label htmlFor="xxl">XXL</label>
+          <input type="number" value={xxl} onChange={(e) => setXxl(e.target.value)} />
+          <label htmlFor="xxxl">XXXL</label>
+          <input type="number" value={xxxl} onChange={(e) => setXxxl(e.target.value)} />
         </div>
         <input type="file" ref={fileInputRef} onChange={(e) => handleImageChange(e, setImg, setPreviewUrl)} />
         {previewUrl && (
