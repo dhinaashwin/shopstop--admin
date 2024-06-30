@@ -20,16 +20,17 @@ mongoose.connect(mongoURI, {
 });
 
 const itemSchema = new mongoose.Schema({
-  name: String,
-  price: Number,
-  imageUrl: String,
-  image_2: String,
-  image_3: String,
-  image_4: String,
-  category: String,
-  new_product: Boolean,
-  discount: Boolean,
-  gender: String
+  id: { type: Number, unique: true, required: true },
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  imageUrl: { type: String, required: true },
+  image_2: { type: String, required: true },
+  image_3: { type: String, required: true },
+  image_4: { type: String, required: true },
+  category: { type: String, required: true },
+  new_product: { type: Boolean, required: true },
+  discount: { type: Boolean, required: true },
+  gender: { type: String, required: true }
 });
 
 const Item = mongoose.model('allproducts', itemSchema);
@@ -40,9 +41,10 @@ app.get("/", (req, res) => {
 
 // POST endpoint to save item to MongoDB
 app.post('/upload', async (req, res) => {
-  const { name, price, imageUrl, image_2, image_3, image_4, category, new_product, discount, gender } = req.body;
+  const { id, name, price, imageUrl, image_2, image_3, image_4, category, new_product, discount, gender } = req.body;
   try {
     const newItem = new Item({
+      id,
       name,
       price,
       imageUrl,
@@ -57,8 +59,12 @@ app.post('/upload', async (req, res) => {
     await newItem.save();
     res.status(201).send('Item saved to MongoDB');
   } catch (error) {
-    console.error('Error saving item:', error);
-    res.status(500).send('Failed to save item');
+    if (error.code === 11000) {
+      res.status(400).send('Item with this ID already exists');
+    } else {
+      console.error('Error saving item:', error);
+      res.status(500).send('Failed to save item');
+    }
   }
 });
 

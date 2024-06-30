@@ -15,6 +15,7 @@ function App() {
   const [previewUrl2, setPreviewUrl2] = useState('');
   const [previewUrl3, setPreviewUrl3] = useState('');
   const [previewUrl4, setPreviewUrl4] = useState('');
+  const [id,setId] = useState(null);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
@@ -31,6 +32,10 @@ function App() {
   const handleClick = async () => {
     if (!img) {
       setUploadStatus('No main image selected');
+      return;
+    }
+    if (!name || !price || !category || !gender) {
+      alert('Please fill out all required fields.');
       return;
     }
     try {
@@ -51,6 +56,7 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          id,
           name,
           price: parseFloat(price),
           imageUrl: mainImageUrl,
@@ -122,6 +128,7 @@ function App() {
     setImg2(null);
     setImg3(null);
     setImg4(null)
+    setId(null)
     setName('');
     setPrice('');
     setDiscount('');
@@ -147,6 +154,8 @@ function App() {
       {/* left sidebar */}
       <div>
         <div>
+        <label htmlFor="name">Id</label>
+        <input type="text" value={name} onChange={(e) => setId(e.target.value)} />
           <label htmlFor="name">Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
           <label htmlFor="price">Price</label>
