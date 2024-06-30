@@ -33,12 +33,60 @@ mongoose.connect(mongoURI, {
 }).catch(err => {
   console.error('MongoDB connection error:', err);
 });
-
 const itemSchema = new mongoose.Schema({
-  name: String,
-  price: Number,
-  imageUrl: String
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  category: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  gender: {
+    type: String,
+    required: true,
+    enum: ['Male', 'Female', 'Unisex'],
+    trim: true
+  },
+  oldPrice: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  newPrice: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  discount: {
+    type: Boolean,
+    default: false
+  },
+  mainImage: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  image_2: {
+    type: String,
+    trim: true
+  },
+  image_3: {
+    type: String,
+    trim: true
+  },
+  image_4: {
+    type: String,
+    trim: true
+  },
+  new: {
+    type: Boolean,
+    default: true
+  }
 });
+
 app.get("/",(req,res) => {
   res.send("Connected")
 })

@@ -10,10 +10,15 @@ function App() {
   const [uploadStatus, setUploadStatus] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [gender, setGender] = useState('');
+  const [oldPrice, setOldPrice] = useState('');
+  const [newPrice, setNewPrice] = useState('');
+  const [discount, setDiscount] = useState(false);
+  const [isNew, setIsNew] = useState(true);
   const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
   const [dresses, setDresses] = useState([]);
-  
+
   const fileInputRef = useRef(); // Create a ref for the file input
 
   const handleClick = async () => {
@@ -33,7 +38,16 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, price, imageUrl: url }),
+        body: JSON.stringify({
+          name,
+          category,
+          gender,
+          oldPrice: parseFloat(oldPrice),
+          newPrice: parseFloat(newPrice),
+          discount,
+          imageUrl: url,
+          new: isNew
+        }),
       });
 
       setUploadStatus('Upload and data save successful');
@@ -92,7 +106,12 @@ function App() {
   const resetForm = () => {
     setImg(null);
     setName('');
-    setPrice('');
+    setCategory('');
+    setGender('');
+    setOldPrice('');
+    setNewPrice('');
+    setDiscount(false);
+    setIsNew(true);
     setPreviewUrl('');
     fileInputRef.current.value = null; // Clear the file input
   };
@@ -109,8 +128,23 @@ function App() {
         <div>
           <label htmlFor="name">Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-          <label htmlFor="price">Price</label>
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+          <label htmlFor="category">Category</label>
+          <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
+          <label htmlFor="gender">Gender</label>
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Unisex">Unisex</option>
+          </select>
+          <label htmlFor="oldPrice">Old Price</label>
+          <input type="number" value={oldPrice} onChange={(e) => setOldPrice(e.target.value)} />
+          <label htmlFor="newPrice">New Price</label>
+          <input type="number" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
+          <label htmlFor="discount">Discount</label>
+          <input type="checkbox" checked={discount} onChange={(e) => setDiscount(e.target.checked)} />
+          <label htmlFor="new">New</label>
+          <input type="checkbox" checked={isNew} onChange={(e) => setIsNew(e.target.checked)} />
         </div>
         <input type="file" ref={fileInputRef} onChange={handleImageChange} />
         <button onClick={handleClick}>Upload</button>
@@ -134,7 +168,12 @@ function App() {
                 <li key={dress._id}>
                   <img src={dress.imageUrl} alt={dress.name} style={{ maxWidth: '200px' }} />
                   <p>Name: {dress.name}</p>
-                  <p>Price: {dress.price}</p>
+                  <p>Category: {dress.category}</p>
+                  <p>Gender: {dress.gender}</p>
+                  <p>Old Price: {dress.oldPrice}</p>
+                  <p>New Price: {dress.newPrice}</p>
+                  <p>Discount: {dress.discount ? 'Yes' : 'No'}</p>
+                  <p>New: {dress.new ? 'Yes' : 'No'}</p>
                   <button onClick={() => handleDelete(dress._id)}>Delete Item</button>
                 </li>
               ))}
