@@ -174,6 +174,7 @@ function App() {
       {/* left sidebar */}
       <div>
         <h1>Add Products</h1>
+        <img src="https://www.dropbox.com/scl/fi/v5e0dog8g5szdex149b4y/A_1006.jpeg?rlkey=7v88bibjdhi4qk9ntjkjdfg38&st=cpgow1k8&dl=0" width='100px'></img>
         <div>
           <label htmlFor="id">Id</label>
           <input
