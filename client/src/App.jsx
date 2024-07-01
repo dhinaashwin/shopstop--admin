@@ -175,7 +175,7 @@ function App() {
       <div>
         <h1>Add Products</h1>
         <div>
-          <label htmlFor="name">Id</label>
+          <label htmlFor="id">Id</label>
           <input
             type="number"
             value={id}
