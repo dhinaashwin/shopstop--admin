@@ -33,31 +33,38 @@ function App() {
       const image2Url = state.img2 ? await uploadImage(state.img2) : "";
       const image3Url = state.img3 ? await uploadImage(state.img3) : "";
       const image4Url = state.img4 ? await uploadImage(state.img4) : "";
+
+      const postData = {
+        id: state.id,
+        name: state.name,
+        price: parseFloat(state.price),
+        imageUrl: mainImageUrl,
+        image_2: image2Url,
+        image_3: image3Url,
+        image_4: image4Url,
+        category: state.category,
+        discount: state.discount,
+        gender: state.gender,
+        new_product: state.newProduct,
+        sizes: state.sizes,
+      };
+
+      // Log the data being posted
+      console.log("Posting data:", postData);
+
       // Send data to MongoDB via your backend server
       await fetch("https://shopstop-admin-server.vercel.app/upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          id: state.id,
-          name: state.name,
-          price: parseFloat(state.price),
-          imageUrl: mainImageUrl,
-          image_2: image2Url,
-          image_3: image3Url,
-          image_4: image4Url,
-          category: state.category,
-          discount: state.discount,
-          gender: state.gender,
-          new_product: state.newProduct,
-          sizes: state.sizes,
-        }),
+        body: JSON.stringify(postData),
       });
 
       dispatch({ type: "SET_UPLOAD_STATUS", uploadStatus: "Upload and data save successful" });
       fetchImages();
       fetchDresses();
+      alert("Form uploaded successfully!"); // Add alert message here
       resetForm(); // Reset the form after upload
     } catch (error) {
       dispatch({ type: "SET_UPLOAD_STATUS", uploadStatus: `Upload failed: ${error.message}` });
