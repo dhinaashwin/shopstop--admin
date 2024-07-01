@@ -1,11 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { imageDb } from "../config"; // Ensure this file exports the configured Firebase storage instance
-import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
+import { useState, useEffect } from "react";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid"; // Import the v4 function and alias it as uuidv4 for generating unique IDs
 import "./App.css";
 
 function App() {
- 
   const [uploadStatus, setUploadStatus] = useState("");
   const [id, setId] = useState(null);
   const [name, setName] = useState("");
@@ -14,7 +12,7 @@ function App() {
   const [newProduct, setNewProduct] = useState(false);
   const [discount, setDiscount] = useState(false);
   const [gender, setGender] = useState("");
-  const [showAllItems, setShowAllItems] = useState(false); // State to toggle showing all items
+  const [showAllItems, setShowAllItems] = useState(false);
   const [dresses, setDresses] = useState([]);
   const [sizes, setSizes] = useState({
     S: 0,
@@ -22,20 +20,26 @@ function App() {
     L: 0,
     XL: 0,
     XXL: 0,
-    XXXL:0,
+    XXXL: 0,
   });
 
   const handleClick = async () => {
-    if (!img) {
-      setUploadStatus("No main image selected");
-      return;
-    }
     if (!name || !price || !category || !gender) {
       alert("Please fill out all required fields.");
       return;
     }
+
     try {
-      // Send data to MongoDB via your backend server
+      const storage = getStorage(); // Get Firebase Storage instance
+      const imageRef = ref(storage, uuidv4()); // Create a reference to a new image file with a unique name
+
+      // Upload image file to Firebase Storage
+      await uploadBytes(imageRef, imgFile);
+
+      // Get download URL of the uploaded image
+      const imageUrl = await getDownloadURL(imageRef);
+
+      // Send data to MongoDB via your backend server including imageUrl
       await fetch("https://shopstop-admin-server.vercel.app/upload", {
         method: "POST",
         headers: {
@@ -45,11 +49,12 @@ function App() {
           id,
           name,
           price: parseFloat(price),
-          category: category,
-          discount: discount,
-          gender: gender,
+          category,
+          discount,
+          gender,
           new_product: newProduct,
           sizes,
+          imageUrl, // Include imageUrl in the data sent to backend
         }),
       });
 
@@ -61,37 +66,7 @@ function App() {
     }
   };
 
-  const toggleShowItems = () => {
-    setShowAllItems((prev) => !prev); // Toggle showAllItems state
-  };
-
-  const fetchDresses = async () => {
-    try {
-      const response = await fetch(
-        "https://shopstop-admin-server.vercel.app/items"
-      );
-      const data = await response.json();
-      setDresses(data);
-    } catch (error) {
-      console.error("Failed to fetch dresses:", error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      try {
-        await fetch(`https://shopstop-admin-server.vercel.app/items/${id}`, {
-          method: "DELETE",
-        });
-        setDresses(dresses.filter((dress) => dress._id !== id));
-      } catch (error) {
-        console.error("Failed to delete dress:", error);
-      }
-    }
-  };
-
   const resetForm = () => {
-  
     setId(null);
     setSizes({
       S: 0,
@@ -99,7 +74,7 @@ function App() {
       L: 0,
       XL: 0,
       XXL: 0,
-      XXXL:0,
+      XXXL: 0,
     });
     setName("");
     setPrice("");
@@ -108,11 +83,6 @@ function App() {
     setGender("");
     setNewProduct("");
   };
-
-  useEffect(() => {
-    fetchDresses();
-  }, []);
-
   return (
     <div className="App">
       {/* left sidebar */}
@@ -211,6 +181,10 @@ function App() {
       >
         -
       </button>
+    </div>
+    <div>
+    <label htmlFor="image">Main Image</label>
+    <input type="file" accept="image/*" onChange={handleImageChange} />
     </div>
   </div>
 ))}

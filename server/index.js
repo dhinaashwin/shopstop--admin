@@ -29,6 +29,7 @@ const itemSchema = new mongoose.Schema({
   gender: { type: String, required: true },
   date: { type: Date, required: true },
   sizes:{type:Object, required: true},
+  imgurl:{type:String, required: true}
 });
 
 const Item = mongoose.model('allproducts', itemSchema);
@@ -39,7 +40,7 @@ app.get("/", (req, res) => {
 
 // POST endpoint to save item to MongoDB
 app.post('/upload', async (req, res) => {
-  const { id, name, price, category, new_product, discount, gender,sizes } = req.body;
+  const { id, name, price, category, new_product, discount, gender,sizes,imgurl } = req.body;
   if (!id || !name || !price || !category || new_product == null || discount == null || !gender) {
     return res.status(400).send('All required fields must be provided');
   }
@@ -54,7 +55,8 @@ app.post('/upload', async (req, res) => {
       discount,
       gender,
       date: new Date(),
-      sizes
+      sizes,
+      imgurl
       
     });
     await newItem.save();
