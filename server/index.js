@@ -23,13 +23,16 @@ const itemSchema = new mongoose.Schema({
   id: { type: String, unique: true, required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },
+  imageUrl: { type: String, required: true },
+  image_2: { type: String },
+  image_3: { type: String },
+  image_4: { type: String },
   category: { type: String, required: true },
   new_product: { type: Boolean, required: true },
   discount: { type: Boolean, required: true },
   gender: { type: String, required: true },
   date: { type: Date, required: true },
   sizes:{type:Object, required: true},
-  imgurl:{type:String, required: true}
 });
 
 const Item = mongoose.model('allproducts', itemSchema);
@@ -40,8 +43,8 @@ app.get("/", (req, res) => {
 
 // POST endpoint to save item to MongoDB
 app.post('/upload', async (req, res) => {
-  const { id, name, price, category, new_product, discount, gender,sizes,imgurl } = req.body;
-  if (!id || !name || !price || !category || new_product == null || discount == null || !gender) {
+  const { id, name, price, imageUrl, image_2, image_3, image_4, category, new_product, discount, gender,sizes } = req.body;
+  if (!id || !name || !price || !imageUrl || !category || new_product == null || discount == null || !gender) {
     return res.status(400).send('All required fields must be provided');
   }
 
@@ -50,13 +53,16 @@ app.post('/upload', async (req, res) => {
       id,
       name,
       price,
+      imageUrl,
+      image_2,
+      image_3,
+      image_4,
       category,
       new_product,
       discount,
       gender,
       date: new Date(),
-      sizes,
-      imgurl
+      sizes
       
     });
     await newItem.save();
